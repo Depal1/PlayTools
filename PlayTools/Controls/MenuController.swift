@@ -44,6 +44,16 @@ extension UIApplication {
     func downscaleElement(_ sender: AnyObject) {
         EditorController.shared.focusedControl?.resize(down: true)
     }
+
+    @objc
+    func setIOSDeviceModelToIPad6_7(_ sender: AnyObject) {
+        PlaySettings.shared.settingsData.iosDeviceModel = "iPad6,7"
+    }
+
+    @objc
+    func setIOSDeviceModelToIPad8_6(_ sender: AnyObject) {
+        PlaySettings.shared.settingsData.iosDeviceModel = "iPad8,6"
+    }
 }
 
 extension UIViewController {
@@ -76,6 +86,7 @@ var keymappingSelectors = [#selector(UIApplication.switchEditorMode(_:)),
 class MenuController {
     init(with builder: UIMenuBuilder) {
         builder.insertSibling(MenuController.keymappingMenu(), afterMenu: .view)
+        builder.insertSibling(MenuController.graphicsDisplayMenu(), afterMenu: .keymappingMenu)
     }
 
     class func keymappingMenu() -> UIMenu {
@@ -96,16 +107,44 @@ class MenuController {
                                     identifier: .keymappingOptionsMenu,
                                     options: .displayInline,
                                     children: arrowKeyChildrenCommands)
-
         return UIMenu(title: NSLocalizedString("Keymapping", comment: ""),
                       image: nil,
                       identifier: .keymappingMenu,
                       options: [],
                       children: [arrowKeysGroup])
     }
+
+    class func graphicsDisplayMenu() -> UIMenu {
+        let deviceModelCommands = [UIKeyCommand(title: "iPad6,7",
+                                                image: nil,
+                                                action: #selector(UIApplication.setIOSDeviceModelToIPad6_7(_:)),
+                                                input: "1",
+                                                modifierFlags: .command,
+                                                propertyList: nil),
+                                   UIKeyCommand(title: "iPad8,6",
+                                                image: nil,
+                                                action: #selector(UIApplication.setIOSDeviceModelToIPad8_6(_:)),
+                                                input: "2",
+                                                modifierFlags: .command,
+                                                propertyList: nil)]
+
+        let deviceModelGroup = UIMenu(title: "",
+                                      image: nil,
+                                      identifier: .deviceMenu,
+                                      options: .displayInline,
+                                      children: deviceModelCommands)
+
+        return UIMenu(title: NSLocalizedString("Device", comment: ""),
+                      image: nil,
+                      identifier: .graphicsDisplayMenu,
+                      options: [],
+                      children: [deviceModelGroup])
+    }
 }
 
 extension UIMenu.Identifier {
     static var keymappingMenu: UIMenu.Identifier { UIMenu.Identifier("io.playcover.PlayTools.menus.editor") }
     static var keymappingOptionsMenu: UIMenu.Identifier { UIMenu.Identifier("io.playcover.PlayTools.menus.keymapping") }
+    static var graphicsDisplayMenu: UIMenu.Identifier { UIMenu.Identifier("io.playcover.PlayTools.menus.graphicsdp") }
+    static var deviceMenu: UIMenu.Identifier { UIMenu.Identifier("io.playcover.PlayTools.menus.device") }
 }
